@@ -1,0 +1,33 @@
+1. add ur syscall to syscall.h
+2. add ur syscall decleration in //proc.c section in defs.h 
+3. add ur syscall decleration to user.h
+4. add ur syscall function to sysproc.c                   // at bottom
+5. add ur syscall to usys.S
+6. add ur syscall to syscall.c  --------------------      // 2 times addition
+
+7. ADD THE MAIN C CODE TO PROC.C                          // main code at bottom
+
+	USE sti(); for inetrupt
+	return syscall no. you defined in syscall.h
+
+8. now make a new file [C prog] which will call our systemcall [ myps ]        // .c file
+
+	CODE:
+		#include "types.h"
+		#include "stat.h"
+		#include "user.h"
+		#include "fcntl.h"
+
+		int main(int argc,char *argv[]){
+			getNumProc();
+			exit();
+		}
+9. ADD THE COMMAND TO MAKEFILE                                  // FINAL
+
+In make file at 2 places
+	1. UPROGS
+	2. EXTRAS  
+
+	                NOTE:------------------------------------      
+
+DO NOT UPDATE THE COMMAND IN MAKE FILE AT LAST OF EACH SECTION INSTEAD UPDATE BEFORE ZOMBIEE
