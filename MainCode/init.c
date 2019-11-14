@@ -19,6 +19,23 @@ main(void)
   dup(0);  // stdout
   dup(0);  // stderr
 
+// Differant Scheduling Processes:
+
+  #ifdef DEFAULT
+    printf(1, "Scheduler policy: DEFAULT\n");
+  #else
+  #ifdef FCFS
+    printf(1, "Scheduler policy: FCFS\n");
+  #else
+  #ifdef SML
+    printf(1, "Scheduler policy: SML\n");
+  #endif
+  #endif
+  #endif
+
+//
+
+
   for(;;){
     printf(1, "init: starting sh\n");
     pid = fork();

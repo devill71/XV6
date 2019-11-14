@@ -64,6 +64,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int priority;                // Process Priority
+  uint ctime;                  // Process creation time
 };
 
 // Process memory is laid out contiguously, low addresses first:
@@ -71,3 +72,8 @@ struct proc {
 //   original data and bss
 //   fixed-size stack
 //   expandable heap
+
+
+// User Defined Functions
+
+struct proc* findReadyProcess(int *priority);

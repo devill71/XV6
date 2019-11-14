@@ -1,7 +1,7 @@
 00000000 .text
 00000778 .rodata
-000007cc .eh_frame
-00000a64 .bss
+000007c8 .eh_frame
+00000a60 .bss
 00000000 .comment
 00000000 .debug_aranges
 00000000 .debug_info
@@ -14,10 +14,10 @@
 00000000 ulib.c
 00000000 printf.c
 00000380 printint
-000007b8 digits.1043
+000007b4 digits.1043
 00000000 umalloc.c
-00000a64 freep
-00000a68 base
+00000a60 freep
+00000a64 base
 00000070 strcpy
 00000420 printf
 00000290 memmove
@@ -38,7 +38,7 @@
 000002ba fork
 0000034a sbrk
 0000035a uptime
-00000a64 __bss_start
+00000a60 __bss_start
 00000120 memset
 00000000 main
 000000a0 strcmp
@@ -46,8 +46,8 @@
 00000362 getNumProc
 0000036a chpr
 00000200 stat
-00000a64 _edata
-00000a70 _end
+00000a60 _edata
+00000a6c _end
 00000322 link
 000002c2 exit
 00000250 atoi

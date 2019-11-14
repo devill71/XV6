@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
   }
   pid = atoi ( argv[1] );
   priority = atoi ( argv[2] );
-  if ( priority < 0 || priority > 3 ) {
-      printf(2, "Invalid priority (0-20)!\n" );
+  if ( priority < 1 || priority > 3 ) {
+      printf(2, "Invalid priority (1-3)!\n" );
       exit();
   }
   chpr ( pid, priority );

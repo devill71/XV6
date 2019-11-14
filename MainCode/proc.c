@@ -26,6 +26,29 @@ pinit(void)
   initlock(&ptable.lock, "ptable");
 }
 
+//New code
+
+// struct cpu*
+// mycpu(void)
+// {
+//   int apicid, i;
+
+//   if(readeflags()&FL_IF)
+//     panic("mycpu called with interrupts enabled\n");
+
+//   apicid = cpunum();
+//   // APIC IDs are not guaranteed to be contiguous. Maybe we should have
+//   // a reverse map, or reserve a register to store &cpus[i].
+//   for (i = 0; i < ncpu; ++i) {
+//     if (cpus[i].apicid == apicid)
+//       return &cpus[i];
+//   }
+//   panic("unknown apicid\n");
+// }
+
+
+//
+
 //PAGEBREAK: 32
 // Look in the process table for an UNUSED proc.
 // If found, change state to EMBRYO and initialize
@@ -49,7 +72,8 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority = 1;     //default Prioroty
+  p->ctime = ticks;
+  p->priority = 2;     //default Prioroty
 
   release(&ptable.lock);
 
@@ -253,6 +277,7 @@ wait(void)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
+        p->priority = 2;
         release(&ptable.lock);
         return pid;
       }
@@ -269,6 +294,103 @@ wait(void)
   }
 }
 
+// User Defined Scheduler
+
+void
+scheduler(void)
+{
+  struct proc *p = 0;
+
+  //struct cpu *c = 0;
+  //c->proc = 0;
+
+  for(;;)
+  {
+      // Enable interrupts on this processor.
+      sti();
+
+      // Loop over process table looking for process to run.
+      acquire(&ptable.lock);
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+      {
+
+          #ifdef DEFAULT
+              if(p->state != RUNNABLE)
+                continue;
+            
+            proc = p;
+            switchuvm(p);
+            p->state = RUNNING;
+            swtch(&cpu->scheduler, p->context);
+            switchkvm();
+          
+          #endif
+          #ifdef FCFS
+
+            struct proc *minP = 0;
+
+            if(p->state != RUNNABLE)
+              continue;
+
+            // ignore init and sh processes from FCFS
+            if(p->pid > 1)
+            {
+              if (minP != 0){
+                // here I find the process with the lowest creation time (the first one that was created)
+                if(p->ctime < minP->ctime)
+                  minP = p;
+              }
+              else
+                  minP = p;
+            }
+            
+
+            // If I found the process which I created first and it is runnable I run it
+            //(in the real FCFS I should not check if it is runnable, but for testing purposes I have to make this control, otherwise every time I launch
+            // a process which does I/0 operation (every simple command) everything will be blocked
+            if(minP != 0 && minP->state == RUNNABLE)
+                p = minP;
+            
+            proc = p;
+            switchuvm(p);
+            p->state = RUNNING;
+            swtch(&cpu->scheduler, p->context);
+            switchkvm();
+          
+          #endif
+          #ifdef SML
+
+            struct proc *foundP = 0;
+
+            int priority = 2;
+            if(p->state != RUNNABLE){
+              continue;
+            }
+            if(p->pid > 1){
+              foundP = findReadyProcess(&priority);
+              if (foundP != 0)
+                p = foundP;
+            }
+
+            proc = p;
+            switchuvm(p);
+            p->state = RUNNING;
+            //swtch(&cpu->scheduler, p->context);
+            switchkvm();
+
+          #endif
+
+
+      // Process is done running for now.
+      // It should have changed its p->state before coming back.
+          proc = 0;
+        }
+
+        release(&ptable.lock);
+  }
+}
+
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -277,12 +399,14 @@ wait(void)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
+/*
 void
 scheduler(void)
 {
+
   struct proc *p;
   struct proc *p1;
-
+  
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -292,8 +416,13 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
+      
+      #ifdef DEFAULT
+        if(p->state != RUNNABLE)
+          continue;
+      #endif
+      
+      
       highP = p;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -320,7 +449,7 @@ scheduler(void)
     release(&ptable.lock);
 
   }
-}
+}*/
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
@@ -552,3 +681,27 @@ int chpr( int pid, int priority )
 
   return pid;
 }
+
+//User Defined fuction for Multi Level Priority
+
+#ifdef SML
+/*
+  this method will find the next process to run
+*/
+struct proc* findReadyProcess(int *priority) {
+  struct proc* p1;
+  int prt=2;
+  while (prt>=0)
+  {
+    for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
+      if(p1->state == RUNNABLE && p1->priority == prt){
+        return p1;
+        *priority=prt;
+      }
+    }
+    prt--;
+  }
+  *priority=-1;
+  return 0;
+}
+#endif
