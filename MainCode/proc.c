@@ -315,8 +315,8 @@ scheduler(void)
       {
 
           #ifdef DEFAULT
-              if(p->state != RUNNABLE)
-                continue;
+            if(p->state != RUNNABLE)
+              continue;
             
             proc = p;
             switchuvm(p);
@@ -326,56 +326,73 @@ scheduler(void)
           
           #endif
           #ifdef FCFS
-
             struct proc *minP = 0;
-
-            if(p->state != RUNNABLE)
-              continue;
-
-            // ignore init and sh processes from FCFS
-            if(p->pid > 1)
-            {
-              if (minP != 0){
-                // here I find the process with the lowest creation time (the first one that was created)
-                if(p->ctime < minP->ctime)
+            for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+              if(p->state == RUNNABLE){
+                if (minP!=0){
+                  if(p->ctime < minP->ctime)
+                    minP = p;
+                }
+                else
                   minP = p;
               }
-              else
-                  minP = p;
             }
-            
-
-            // If I found the process which I created first and it is runnable I run it
-            //(in the real FCFS I should not check if it is runnable, but for testing purposes I have to make this control, otherwise every time I launch
-            // a process which does I/0 operation (every simple command) everything will be blocked
-            if(minP != 0 && minP->state == RUNNABLE)
-                p = minP;
-            
-            proc = p;
-            switchuvm(p);
-            p->state = RUNNING;
-            swtch(&cpu->scheduler, p->context);
-            switchkvm();
-          
+            if (minP!=0){
+              p = minP;//the process with the smallest creation time
+              proc = p;
+              switchuvm(p);
+              p->state = RUNNING;
+              swtch(&cpu->scheduler, proc->context);
+              switchkvm();
+              // Process is done running for now.
+              // It should have changed its p->state before coming back.
+              //proc = 0;
+            }
           #endif
-          #ifdef SML
+          #ifdef FRR
+            struct proc *minP = 0;
+            for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+              if(p->state == RUNNABLE){
+                if (minP!=0){
+                  if(p->ctime < minP->ctime)
+                    minP = p;
+                }
+                else
+                  minP = p;
+              }
+            }
+            if (minP!=0){
+              p = minP;//the process with the smallest creation time
+              proc = p;
+              switchuvm(p);
+              p->ctime = ticks;
+              p->state = RUNNING;
+              swtch(&cpu->scheduler, proc->context);
+              switchkvm();
+              // Process is done running for now.
+              // It should have changed its p->state before coming back.
+              //proc = 0;
+            }
+          #endif
 
-            struct proc *foundP = 0;
+          #ifdef MLQ
 
-            int priority = 2;
-            if(p->state != RUNNABLE){
+          if(p->state != RUNNABLE)
+            continue;
+          highP = p;
+          // Choose one with high priority ..... 
+          for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
+            if(p1->state != RUNNABLE)
               continue;
+            if (highP->priority < p1->priority)   // larger value, larger priority 
+              highP = p1;
             }
-            if(p->pid > 1){
-              foundP = findReadyProcess(&priority);
-              if (foundP != 0)
-                p = foundP;
-            }
-
+            p = highP;
             proc = p;
             switchuvm(p);
+            p->ctime = ticks;
             p->state = RUNNING;
-            //swtch(&cpu->scheduler, p->context);
+            swtch(&cpu->scheduler, proc->context);
             switchkvm();
 
           #endif
@@ -416,13 +433,8 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      
-      #ifdef DEFAULT
-        if(p->state != RUNNABLE)
-          continue;
-      #endif
-      
-      
+      if(p->state != RUNNABLE)
+        continue;
       highP = p;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -684,11 +696,11 @@ int chpr( int pid, int priority )
 
 //User Defined fuction for Multi Level Priority
 
-#ifdef SML
+#ifdef MLQ
 /*
-  this method will find the next process to run
+  this method will find the highest priority
 */
-struct proc* findReadyProcess(int *priority) {
+void findPriority(int *priority) {
   struct proc* p1;
   int prt=2;
   while (prt>=0)

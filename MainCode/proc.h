@@ -76,4 +76,4 @@ struct proc {
 
 // User Defined Functions
 
-struct proc* findReadyProcess(int *priority);
+struct proc* findPriority(int *priority);
