@@ -73,7 +73,3 @@ struct proc {
 //   fixed-size stack
 //   expandable heap
 
-
-// User Defined Functions
-
-struct proc* findPriority(int *priority);

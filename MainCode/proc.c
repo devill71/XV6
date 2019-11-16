@@ -73,7 +73,12 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->ctime = ticks;
-  p->priority = 2;     //default Prioroty
+  if(p->pid >2){
+    p->priority = 1;     //default Prioroty
+  }
+  else{
+    p->priority=2;      // For init and "Sh"
+  }
 
   release(&ptable.lock);
 
@@ -379,21 +384,34 @@ scheduler(void)
 
           if(p->state != RUNNABLE)
             continue;
-          highP = p;
+          struct proc *highP = p;
           // Choose one with high priority ..... 
-          for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
-            if(p1->state != RUNNABLE)
+          for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+            if(p->state != RUNNABLE)
               continue;
-            if (highP->priority < p1->priority)   // larger value, larger priority 
-              highP = p1;
+            if (p->priority >highP->priority )   // larger value, larger priority 
+              highP = p;
+            if(p->priority == highP->priority){
+               if(p->ctime < highP->ctime)
+                    highP = p;
+              }
             }
             p = highP;
-            proc = p;
-            switchuvm(p);
-            p->ctime = ticks;
-            p->state = RUNNING;
-            swtch(&cpu->scheduler, proc->context);
-            switchkvm();
+            if(p->priority ==1 || p->priority==2){
+              proc = p;
+              switchuvm(p);
+              p->ctime = ticks;
+              p->state = RUNNING;
+              swtch(&cpu->scheduler, proc->context);
+              switchkvm();
+            }
+            else{
+              proc = p;
+              switchuvm(p);
+              p->state = RUNNING;
+              swtch(&cpu->scheduler, proc->context);
+              switchkvm();
+            }
 
           #endif
 
@@ -696,24 +714,3 @@ int chpr( int pid, int priority )
 
 //User Defined fuction for Multi Level Priority
 
-#ifdef MLQ
-/*
-  this method will find the highest priority
-*/
-void findPriority(int *priority) {
-  struct proc* p1;
-  int prt=2;
-  while (prt>=0)
-  {
-    for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
-      if(p1->state == RUNNABLE && p1->priority == prt){
-        return p1;
-        *priority=prt;
-      }
-    }
-    prt--;
-  }
-  *priority=-1;
-  return 0;
-}
-#endif
