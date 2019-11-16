@@ -20,5 +20,5 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
-#define SYS_getNumProc 22
+#define SYS_getNumProc 22       //ps
 #define SYS_chpr 23     //Change Priority

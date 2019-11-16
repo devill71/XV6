@@ -26,28 +26,6 @@ pinit(void)
   initlock(&ptable.lock, "ptable");
 }
 
-//New code
-
-// struct cpu*
-// mycpu(void)
-// {
-//   int apicid, i;
-
-//   if(readeflags()&FL_IF)
-//     panic("mycpu called with interrupts enabled\n");
-
-//   apicid = cpunum();
-//   // APIC IDs are not guaranteed to be contiguous. Maybe we should have
-//   // a reverse map, or reserve a register to store &cpus[i].
-//   for (i = 0; i < ncpu; ++i) {
-//     if (cpus[i].apicid == apicid)
-//       return &cpus[i];
-//   }
-//   panic("unknown apicid\n");
-// }
-
-
-//
 
 //PAGEBREAK: 32
 // Look in the process table for an UNUSED proc.
@@ -438,34 +416,21 @@ scheduler(void)
 void
 scheduler(void)
 {
-
   struct proc *p;
-  struct proc *p1;
-  
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
-
-    struct proc *highP = 0;
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-      highP = p;
+
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-
-      // Choose one with high priority ..... 
-      for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
-        if(p1->state != RUNNABLE)
-          continue;
-        if ( highP->priority < p1->priority )   // larger value, larger priority 
-          highP = p1;
-      }
-      p = highP;
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -712,5 +677,4 @@ int chpr( int pid, int priority )
   return pid;
 }
 
-//User Defined fuction for Multi Level Priority
 
