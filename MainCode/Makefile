@@ -72,7 +72,7 @@ endif
 
 
 ifndef SCHEDFLAG
-	SCHEDPOLICY = DEFAULT
+	SCHEDFLAG = DEFAULT
 endif
 
 CC = $(TOOLPREFIX)gcc
