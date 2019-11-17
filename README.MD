@@ -10,6 +10,12 @@ $ make qemu SCHEDFLAG=FCFS
 
 If the flag isn't defined at launch, then DEFAULT (Round-Robin policy) is used.
 
+A dummy file test.c is been created to see how differant process are scheduling.
+Usage:
+```
+$ test &;
+```
+
 ## Changes Made in File
 * Changed scheduler() and allocproc() in proc.c
 * Chnaged struct proc in proc.h --added priority and ctime.
