@@ -112,10 +112,10 @@ $ make qemu SCHEDFLAG=MLQ
 
 __Group No: 21__
 
-IIT2018046  Aditya Kumar
-IIT2018031  Raushan Raj
-IIT2018096  Vineet Kumar
-IIT2018080  PAREKH MANAN JAGDISHBHAI
+- IIT2018046  Aditya Kumar
+- IIT2018031  Raushan Raj
+- IIT2018096  Vineet Kumar
+- IIT2018080  PAREKH MANAN JAGDISHBHAI
 
 
 ## Acknowledgments
