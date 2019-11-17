@@ -12,6 +12,7 @@ If the flag isn't defined at launch, then DEFAULT (Round-Robin policy) is used.
 
 ## Changes Made in File
 * Changed scheduler() and allocproc() in proc.c
+* Chnaged struct proc in proc.h --added priority and ctime.
 * Added system call chpr(int pid,int priority) for changing priority (filed used change.c) --Usage given in MLQ
 * Added system call getNumProc() for ps command (file used ps.c)  --Usage given below:
 ```
@@ -117,7 +118,7 @@ $ make qemu SCHEDFLAG=MLQ
 Group No: 21
 
 IIT2018046 - Aditya Kumar
-IIT2018096 - Raushan Raj
+IIT2018031 - Raushan Raj
 IIT2018096 - Vineet Kumar
 IIT2018080 - PAREKH MANAN JAGDISHBHAI
 
