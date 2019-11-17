@@ -59,10 +59,6 @@ To enable it and see how FCFS works use this command when compiling xv6:
 $ make qemu SCHEDFLAG=FCFS
 ```
 
-```
-$ ./generate.sh --lab lab_scheduling --flags FCFS
-```
-
 ## FRR - FIFO Round Robin Algorithm
 
 FRR policy will extend the previous default policy. In this policy the decision of which process will run next will be on a First In - First Out basis.
@@ -101,8 +97,6 @@ $ change pid newPriorty
 ```
 where pid is the process id and newPriority is updated priority (Both are integer values)
 
-```
-
 To enable Scheduling and see how MLQ works use this command when compiling xv6:
 
 ```
@@ -135,7 +129,7 @@ xv6 borrows code from the following sources:
     FreeBSD (ioapic.c)
     NetBSD (console.c)
 
-The following people have made contributions:
+he following people have made contributions:
     Russ Cox (context switching, locking)
     Cliff Frey (MP)
     Xiao Yu (MP)
