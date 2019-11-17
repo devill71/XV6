@@ -106,7 +106,7 @@ $ make qemu SCHEDFLAG=MLQ
 
 ## Credits
 
-*This project is the work of Aditya Kumar, Raushan Raj, Vineet Kumar,  PAREKH MANAN JAGDISHBHAI*
+*This project is the work of Aditya Kumar, Raushan Raj, Vineet Kumar,  Parekh Manan Jagdishbhai*
 
 *It is done under supervision of Dr.Bibhas Ghosal Asst. Prof. of IT dept. in IIIT Allahabad*
 
@@ -115,7 +115,7 @@ __Group No: 21__
 - IIT2018046  Aditya Kumar
 - IIT2018031  Raushan Raj
 - IIT2018096  Vineet Kumar
-- IIT2018080  PAREKH MANAN JAGDISHBHAI
+- IIT2018080  Parekh Manan Jagdishbhai
 
 
 ## Acknowledgments
